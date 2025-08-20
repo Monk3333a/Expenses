@@ -1,6 +1,5 @@
-// Firebase Configuration for v3.0
+// Firebase Configuration for INR Family Expense Tracker
 // Replace these values with your actual Firebase project config
-// Get this from: Firebase Console > Project Settings > General > Web App
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
@@ -26,5 +25,4 @@ export const auth = getAuth(app);
 // Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
 
-// For debugging
-console.log('Firebase v3.0 initialized successfully');
+console.log('Firebase initialized for INR expense tracker');

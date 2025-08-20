@@ -1,36 +1,35 @@
 {
-    "name": "Family Expense Tracker v3.0",
-    "short_name": "FamilyExpenses",
-    "description": "Enhanced family expense tracker with working category management and edit functionality",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#2196f3",
-    "orientation": "portrait-primary",
-    "scope": "/",
-    "lang": "en",
-    "categories": ["finance", "productivity", "utilities"],
-    "icons": [
-        {
-            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='96' fill='%232196f3'/%3E%3Cpath d='M96 40c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zm0 8c26.51 0 48 21.49 48 48s-21.49 48-48 48-48-21.49-48-48 21.49-48 48-48z' fill='white'/%3E%3Ctext x='96' y='110' text-anchor='middle' fill='white' font-size='48' font-family='Arial' font-weight='bold'%3E$%3C/text%3E%3C/svg%3E",
-            "sizes": "192x192",
-            "type": "image/svg+xml",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%232196f3'/%3E%3Cpath d='M256 80c-97.202 0-176 78.798-176 176s78.798 176 176 176 176-78.798 176-176S353.202 80 256 80zm0 16c88.366 0 160 71.634 160 160s-71.634 160-160 160S96 344.366 96 256 167.634 96 256 96z' fill='white'/%3E%3Ctext x='256' y='300' text-anchor='middle' fill='white' font-size='120' font-family='Arial' font-weight='bold'%3E$%3C/text%3E%3C/svg%3E",
-            "sizes": "512x512",
-            "type": "image/svg+xml",
-            "purpose": "any maskable"
-        }
-    ],
-    "features": [
-        "Working category management (add/edit/delete)",
-        "Edit and delete individual expenses", 
-        "Improved layout priority",
-        "Real-time synchronization across devices",
-        "Independent sub-categories",
-        "Enhanced analytics dashboard",
-        "Offline functionality with automatic sync"
-    ]
+  "name": "Family Expense Tracker (INR)",
+  "short_name": "Expenses₹",
+  "description": "Track family expenses in Indian Rupee with real-time sync",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2196f3",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-IN",
+  "categories": ["finance", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='96' fill='%232196f3'/%3E%3Ctext x='96' y='115' text-anchor='middle' fill='white' font-size='48' font-weight='bold'%3E₹%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%232196f3'/%3E%3Ctext x='256' y='320' text-anchor='middle' fill='white' font-size='120' font-weight='bold'%3E₹%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "features": [
+    "Indian Rupee (₹) currency support",
+    "Indian payment methods (UPI, PayTM, GPay, PhonePe)",
+    "Category management with edit/delete functionality",
+    "Real-time synchronization across devices",
+    "Enhanced analytics dashboard",
+    "Offline functionality with automatic sync"
+  ]
 }
