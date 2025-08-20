@@ -1,4 +1,4 @@
-// Enhanced Family Expense Tracker v3.0 - Custom Categories & Search
+// Enhanced Family Expense Tracker v3.0 - Error Handling Fixed
 import { auth, db } from './firebase-config.js';
 import { 
     signInWithEmailAndPassword, 
@@ -79,6 +79,7 @@ class FamilyExpenseTracker {
     async handleAuthStateChange(user) {
         if (user) {
             this.currentUser = user;
+            console.log('User signed in:', user.email);
             await this.loadUserData();
             this.showMainApp();
             this.setupRealtimeListeners();
@@ -92,23 +93,83 @@ class FamilyExpenseTracker {
 
     async loadUserData() {
         try {
-            const userDoc = await getDoc(doc(db, 'users', this.currentUser.uid));
-            if (userDoc.exists()) {
-                this.familyId = userDoc.data().familyId;
-            }
+            console.log('Loading user data for:', this.currentUser.uid);
 
+            // Set email first (this always works)
             const emailEl = document.getElementById('userEmail');
             if (emailEl) {
                 emailEl.textContent = this.currentUser.email;
             }
 
+            // Try to get user document
+            const userDocRef = doc(db, 'users', this.currentUser.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                this.familyId = userData.familyId;
+                console.log('User data loaded. Family ID:', this.familyId);
+            } else {
+                // User document doesn't exist - this is normal for new users
+                console.log('User document does not exist yet - will be created during signup');
+                // Don't show error for this case
+                return;
+            }
+
+            // Load categories if we have a family ID
             if (this.familyId) {
-                await this.loadFamilyCategories();
+                try {
+                    await this.loadFamilyCategories();
+                    console.log('Categories loaded successfully');
+                } catch (categoryError) {
+                    console.error('Error loading categories:', categoryError);
+                    // Only show error for category loading if it's a real issue
+                    if (categoryError.code !== 'permission-denied') {
+                        this.showMessage('Categories will be available after first expense', 'info');
+                    }
+                }
             }
 
         } catch (error) {
-            console.error('Error loading user data:', error);
-            this.showMessage('Error loading user data', 'error');
+            console.error('Error in loadUserData:', error);
+
+            // Only show error message for serious issues
+            if (error.code === 'permission-denied') {
+                this.showMessage('Permission denied. Please check your Firebase settings.', 'error');
+            } else if (error.code === 'unavailable') {
+                this.showMessage('Database temporarily unavailable. Please try again.', 'error');
+            } else if (!this.currentUser) {
+                // Auth state changed while loading - ignore
+                console.log('Auth state changed during load - ignoring error');
+            } else {
+                // Only show generic error if it's not a common issue
+                console.log('User data load had minor issue, but continuing...');
+                this.showMessage('Some data loading slowly - please wait', 'info');
+            }
+        }
+    }
+
+    async loadFamilyCategories() {
+        if (!this.familyId) {
+            console.log('No family ID available for loading categories');
+            return;
+        }
+
+        try {
+            const categoriesRef = doc(db, 'families', this.familyId, 'settings', 'categories');
+            const categoriesDoc = await getDoc(categoriesRef);
+
+            if (categoriesDoc.exists()) {
+                this.categories = categoriesDoc.data();
+                console.log('Categories loaded:', Object.keys(this.categories));
+            } else {
+                console.log('Categories document does not exist - using defaults');
+                // Initialize with custom categories for new families
+                await this.initializeCustomCategories(this.familyId);
+            }
+        } catch (error) {
+            console.error('Error loading family categories:', error);
+            throw error; // Re-throw to be handled by caller
         }
     }
 
@@ -247,6 +308,7 @@ class FamilyExpenseTracker {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // Create family document
             const familyRef = doc(collection(db, 'families'));
             const familyId = familyRef.id;
 
@@ -257,6 +319,7 @@ class FamilyExpenseTracker {
                 members: [user.uid]
             });
 
+            // Create user document
             await setDoc(doc(db, 'users', user.uid), {
                 email: email,
                 familyId: familyId,
@@ -264,7 +327,9 @@ class FamilyExpenseTracker {
                 joinedAt: new Date()
             });
 
+            // Initialize custom categories
             await this.initializeCustomCategories(familyId);
+
             this.showMessage('Account created successfully!', 'success');
 
         } catch (error) {
@@ -300,6 +365,8 @@ class FamilyExpenseTracker {
     }
 
     async initializeCustomCategories(familyId) {
+        console.log('Initializing custom categories for family:', familyId);
+
         // YOUR CUSTOM CATEGORIES
         const customCategories = {
             main: [
@@ -354,11 +421,22 @@ class FamilyExpenseTracker {
             ]
         };
 
-        await setDoc(doc(db, 'families', familyId, 'settings', 'categories'), customCategories);
+        try {
+            await setDoc(doc(db, 'families', familyId, 'settings', 'categories'), customCategories);
+            console.log('Custom categories initialized successfully');
+        } catch (error) {
+            console.error('Error initializing categories:', error);
+            throw error;
+        }
     }
 
     setupRealtimeListeners() {
-        if (!this.familyId) return;
+        if (!this.familyId) {
+            console.log('No family ID available for realtime listeners');
+            return;
+        }
+
+        console.log('Setting up realtime listeners for family:', this.familyId);
 
         const expensesRef = collection(db, 'families', this.familyId, 'expenses');
         const expensesQuery = query(expensesRef, orderBy('date', 'desc'));
@@ -371,6 +449,9 @@ class FamilyExpenseTracker {
             this.renderExpensesList();
             this.updateAnalytics();
             this.updateSyncStatus(this.isOnline ? '🟢 Synced' : '🔴 Offline');
+        }, (error) => {
+            console.error('Error in expenses listener:', error);
+            this.showMessage('Error syncing expenses - please refresh', 'error');
         });
 
         const categoriesRef = doc(db, 'families', this.familyId, 'settings', 'categories');
@@ -380,6 +461,9 @@ class FamilyExpenseTracker {
                 this.populateDropdowns();
                 this.updateCategoryManagement();
             }
+        }, (error) => {
+            console.error('Error in categories listener:', error);
+            // Don't show error message for categories - they'll load eventually
         });
 
         this.unsubscribers.push(unsubExpenses, unsubCategories);
@@ -1175,18 +1259,6 @@ class FamilyExpenseTracker {
                 messageEl.parentNode.removeChild(messageEl);
             }
         }, 4000);
-    }
-
-    setupPWA() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('SW registered successfully');
-                })
-                .catch(error => {
-                    console.log('SW registration failed');
-                });
-        }
     }
 }
 

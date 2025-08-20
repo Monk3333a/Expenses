@@ -7,18 +7,19 @@
 
     <!-- PWA meta tags -->
     <meta name="description" content="Family expense tracker with real-time sync and analytics">
-    <meta name="theme_color" content="#2196f3">
+    <meta name="theme-color" content="#2196f3">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="FamilyExpenses">
+    <meta name="apple-mobile-web-app-title" content="Family Expenses">
 
-    <!-- PWA manifest -->
-    <link rel="manifest" href="manifest.json">
+    <!-- PWA manifest - FIXED PATH -->
+    <link rel="manifest" href="./manifest.json">
 
     <!-- Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%232196f3'/%3E%3Ctext x='50' y='65' text-anchor='middle' fill='white' font-size='60' font-family='Arial'%3E₹%3C/text%3E%3C/svg%3E">
 
-    <link rel="stylesheet" href="style.css">
+    <!-- FIXED PATH -->
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
     <div class="container">
@@ -331,20 +332,19 @@
     <!-- Messages -->
     <div id="messageContainer" class="message-container"></div>
 
-    <!-- Confirmation Dialog -->
-    <div id="confirmDialog" class="modal">
-        <div class="modal-content small">
-            <div class="modal-body">
-                <p id="confirmMessage"></p>
-                <div class="modal-actions">
-                    <button id="confirmYes" class="btn btn-danger">Yes</button>
-                    <button id="confirmNo" class="btn btn-secondary">No</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- FIXED PATHS -->
+    <script type="module" src="./firebase-config.js"></script>
+    <script type="module" src="./app-firebase-v3.js"></script>
 
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="app-firebase-v3.js"></script>
+    <!-- Enhanced PWA Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(() => console.log('✅ SW registered'))
+                    .catch(error => console.error('❌ SW failed:', error));
+            });
+        }
+    </script>
 </body>
 </html>

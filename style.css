@@ -1,5 +1,4 @@
-/* Family Expense Tracker Custom Categories CSS */
-
+/* Family Expense Tracker - Complete CSS */
 * {
     margin: 0;
     padding: 0;
@@ -183,7 +182,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* Quick Summary */
+/* Summary */
 .quick-summary {
     display: flex;
     gap: 2rem;
@@ -627,7 +626,7 @@ body {
     margin-top: 1.5rem;
 }
 
-/* Category Management with Search */
+/* Category Management */
 .category-tabs {
     display: flex;
     margin-bottom: 1.5rem;
@@ -663,7 +662,7 @@ body {
     display: block;
 }
 
-/* Search Box Styling */
+/* Search Box */
 .search-box {
     margin-bottom: 1rem;
 }
@@ -747,17 +746,6 @@ body {
     color: #1976d2;
     font-size: 0.9rem;
     border-left: 4px solid #2196f3;
-}
-
-/* No results message */
-.no-results-message {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-    font-style: italic;
-    border: 2px dashed #ddd;
-    border-radius: 8px;
-    background: #f9f9f9;
 }
 
 /* Messages */
@@ -856,14 +844,6 @@ body {
         align-items: flex-start;
         gap: 0.5rem;
     }
-
-    .add-category {
-        flex-direction: column;
-    }
-
-    .search-input {
-        margin-bottom: 0.5rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -897,44 +877,4 @@ button:focus,
 input:focus,
 select:focus {
     outline: none;
-}
-
-/* Scrollbar styling for category lists */
-.category-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.category-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.category-list::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-.category-list::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Enhanced search animations */
-.search-input:focus + .add-category,
-.search-input:not(:placeholder-shown) + .add-category {
-    border-top: 1px solid #e0e0e0;
-    padding-top: 1rem;
-    margin-top: 1rem;
-}
-
-/* Category item highlight when found in search */
-.category-item.search-highlight {
-    background: #fff3cd;
-    border-color: #ffc107;
-    animation: searchPulse 0.3s ease;
-}
-
-@keyframes searchPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
 }
