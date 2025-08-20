@@ -7,7 +7,7 @@
 
     <!-- PWA meta tags -->
     <meta name="description" content="Family expense tracker with real-time sync and analytics">
-    <meta name="theme-color" content="#2196f3">
+    <meta name="theme_color" content="#2196f3">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="FamilyExpenses">
@@ -220,7 +220,7 @@
         </div>
     </div>
 
-    <!-- Category Management Modal -->
+    <!-- Category Management Modal with Search -->
     <div id="categoryModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -233,22 +233,37 @@
                     <button class="tab-btn" data-tab="sub-categories">Sub Categories</button>
                     <button class="tab-btn" data-tab="payment-modes">Payment Modes</button>
                 </div>
+
+                <!-- Main Categories Tab with Search -->
                 <div id="main-categories" class="tab-content active">
+                    <div class="search-box">
+                        <input type="text" id="searchMainCategories" placeholder="🔍 Search main categories..." class="search-input">
+                    </div>
                     <div class="add-category">
                         <input type="text" id="newMainCategory" placeholder="Enter new main category">
                         <button id="addMainCategory" class="btn btn-primary">Add</button>
                     </div>
                     <ul id="mainCategoriesList" class="category-list"></ul>
                 </div>
+
+                <!-- Sub Categories Tab with Search -->
                 <div id="sub-categories" class="tab-content">
                     <p class="info-text">ℹ️ Sub-categories are independent and can be used with any main category</p>
+                    <div class="search-box">
+                        <input type="text" id="searchSubCategories" placeholder="🔍 Search sub-categories..." class="search-input">
+                    </div>
                     <div class="add-category">
                         <input type="text" id="newSubCategory" placeholder="Enter new sub category">
                         <button id="addSubCategory" class="btn btn-primary">Add</button>
                     </div>
                     <ul id="subCategoriesList" class="category-list"></ul>
                 </div>
+
+                <!-- Payment Modes Tab with Search -->
                 <div id="payment-modes" class="tab-content">
+                    <div class="search-box">
+                        <input type="text" id="searchPaymentModes" placeholder="🔍 Search payment modes..." class="search-input">
+                    </div>
                     <div class="add-category">
                         <input type="text" id="newPaymentMode" placeholder="Enter new payment mode">
                         <button id="addPaymentMode" class="btn btn-primary">Add</button>

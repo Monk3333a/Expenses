@@ -1,4 +1,4 @@
-/* Family Expense Tracker INR Version CSS */
+/* Family Expense Tracker Custom Categories CSS */
 
 * {
     margin: 0;
@@ -627,7 +627,7 @@ body {
     margin-top: 1.5rem;
 }
 
-/* Category Management */
+/* Category Management with Search */
 .category-tabs {
     display: flex;
     margin-bottom: 1.5rem;
@@ -663,6 +663,32 @@ body {
     display: block;
 }
 
+/* Search Box Styling */
+.search-box {
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
 .add-category {
     display: flex;
     gap: 0.5rem;
@@ -686,6 +712,8 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .category-item {
@@ -703,6 +731,7 @@ body {
 .category-item:hover {
     background: #e3f2fd;
     border-color: #2196f3;
+    transform: translateX(4px);
 }
 
 .category-name {
@@ -718,6 +747,17 @@ body {
     color: #1976d2;
     font-size: 0.9rem;
     border-left: 4px solid #2196f3;
+}
+
+/* No results message */
+.no-results-message {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
 }
 
 /* Messages */
@@ -816,6 +856,14 @@ body {
         align-items: flex-start;
         gap: 0.5rem;
     }
+
+    .add-category {
+        flex-direction: column;
+    }
+
+    .search-input {
+        margin-bottom: 0.5rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -849,4 +897,44 @@ button:focus,
 input:focus,
 select:focus {
     outline: none;
+}
+
+/* Scrollbar styling for category lists */
+.category-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.category-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.category-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.category-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Enhanced search animations */
+.search-input:focus + .add-category,
+.search-input:not(:placeholder-shown) + .add-category {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* Category item highlight when found in search */
+.category-item.search-highlight {
+    background: #fff3cd;
+    border-color: #ffc107;
+    animation: searchPulse 0.3s ease;
+}
+
+@keyframes searchPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
 }

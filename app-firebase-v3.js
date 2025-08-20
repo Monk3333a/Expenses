@@ -1,4 +1,4 @@
-// Enhanced Family Expense Tracker v3.0 - INR Version
+// Enhanced Family Expense Tracker v3.0 - Custom Categories & Search
 import { auth, db } from './firebase-config.js';
 import { 
     signInWithEmailAndPassword, 
@@ -184,6 +184,17 @@ class FamilyExpenseTracker {
         document.getElementById('addSubCategory')?.addEventListener('click', () => this.addSubCategory());
         document.getElementById('addPaymentMode')?.addEventListener('click', () => this.addPaymentMode());
 
+        // Search functionality
+        document.getElementById('searchMainCategories')?.addEventListener('input', (e) => {
+            this.filterCategoryList('main', e.target.value);
+        });
+        document.getElementById('searchSubCategories')?.addEventListener('input', (e) => {
+            this.filterCategoryList('sub', e.target.value);
+        });
+        document.getElementById('searchPaymentModes')?.addEventListener('input', (e) => {
+            this.filterCategoryList('payment', e.target.value);
+        });
+
         // Enter key support for adding categories
         document.getElementById('newMainCategory')?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.addMainCategory();
@@ -253,7 +264,7 @@ class FamilyExpenseTracker {
                 joinedAt: new Date()
             });
 
-            await this.initializeDefaultCategories(familyId);
+            await this.initializeCustomCategories(familyId);
             this.showMessage('Account created successfully!', 'success');
 
         } catch (error) {
@@ -288,46 +299,45 @@ class FamilyExpenseTracker {
         }
     }
 
-    async initializeDefaultCategories(familyId) {
-        const defaultCategories = {
+    async initializeCustomCategories(familyId) {
+        // YOUR CUSTOM CATEGORIES
+        const customCategories = {
             main: [
-                { name: "Food" },
-                { name: "Transport" },
-                { name: "Shopping" },
-                { name: "Bills" },
-                { name: "Entertainment" },
-                { name: "Healthcare" },
-                { name: "Education" }
+                { name: "Monthly House Expenses" },
+                { name: "Yearly House Expenses" },
+                { name: "Chanchal Expenses" },
+                { name: "Leisure" },
+                { name: "Additional Expenses" },
+                { name: "Capex" },
+                { name: "Loans" },
+                { name: "Travel" },
+                { name: "Dipti Expenses" },
+                { name: "Investments" }
             ],
             sub: [
                 { name: "Groceries" },
-                { name: "Dining Out" },
-                { name: "Snacks" },
-                { name: "Coffee/Tea" },
+                { name: "Pathalgaon" },
                 { name: "Fuel" },
-                { name: "Public Transport" },
-                { name: "Taxi/Uber" },
-                { name: "Auto Rickshaw" },
-                { name: "Metro/Bus" },
-                { name: "Car Maintenance" },
-                { name: "Clothing" },
-                { name: "Electronics" },
-                { name: "Household Items" },
-                { name: "Personal Care" },
-                { name: "Electricity" },
-                { name: "Internet" },
-                { name: "Phone" },
-                { name: "Water" },
-                { name: "Gas" },
-                { name: "Movies" },
-                { name: "Games" },
-                { name: "Sports" },
-                { name: "Books" },
-                { name: "Doctor Visit" },
-                { name: "Medicines" },
-                { name: "Health Insurance" },
-                { name: "Course Fees" },
-                { name: "Supplies" }
+                { name: "Additional Fun" },
+                { name: "Commute" },
+                { name: "Eating Out" },
+                { name: "Miscelleneous" },
+                { name: "Guest Expenses" },
+                { name: "Capex - Appliances" },
+                { name: "Household Expense" },
+                { name: "Car Expenses" },
+                { name: "Chanchal Expenses" },
+                { name: "Medical" },
+                { name: "Dipti Expenses" },
+                { name: "Donation" },
+                { name: "Clothes & Accessories" },
+                { name: "Appliance Maintainace" },
+                { name: "Festival Expenses" },
+                { name: "Stocks" },
+                { name: "Relocation" },
+                { name: "Mutual Funds" },
+                { name: "Insurance" },
+                { name: "Office Expenses" }
             ],
             payment: [
                 { name: "Cash" },
@@ -338,11 +348,13 @@ class FamilyExpenseTracker {
                 { name: "Mobile Wallet" },
                 { name: "PayTM" },
                 { name: "Google Pay" },
-                { name: "PhonePe" }
+                { name: "PhonePe" },
+                { name: "Bank Transfer" },
+                { name: "Cheque" }
             ]
         };
 
-        await setDoc(doc(db, 'families', familyId, 'settings', 'categories'), defaultCategories);
+        await setDoc(doc(db, 'families', familyId, 'settings', 'categories'), customCategories);
     }
 
     setupRealtimeListeners() {
@@ -425,6 +437,353 @@ class FamilyExpenseTracker {
             this.showMessage('Error adding expense', 'error');
             this.updateSyncStatus('❌ Sync Error');
         }
+    }
+
+    async handleEditExpense(e) {
+        e.preventDefault();
+
+        if (!this.editingExpenseId) return;
+
+        const formData = new FormData(e.target);
+        const updatedExpense = {
+            date: formData.get('date'),
+            mainCategory: formData.get('mainCategory'),
+            subCategory: formData.get('subCategory'),
+            amount: parseFloat(formData.get('amount')),
+            paymentMode: formData.get('paymentMode'),
+            description: formData.get('description') || '',
+            updatedAt: new Date()
+        };
+
+        if (!updatedExpense.date || !updatedExpense.mainCategory || !updatedExpense.subCategory || 
+            !updatedExpense.amount || !updatedExpense.paymentMode) {
+            this.showMessage('Please fill all required fields', 'error');
+            return;
+        }
+
+        if (updatedExpense.amount <= 0) {
+            this.showMessage('Amount must be greater than 0', 'error');
+            return;
+        }
+
+        try {
+            this.updateSyncStatus('⏳ Syncing...');
+
+            await updateDoc(doc(db, 'families', this.familyId, 'expenses', this.editingExpenseId), updatedExpense);
+
+            this.closeEditModal();
+            this.showMessage('Expense updated successfully!', 'success');
+            this.updateSyncStatus(this.isOnline ? '🟢 Synced' : '🔴 Offline');
+
+        } catch (error) {
+            console.error('Error updating expense:', error);
+            this.showMessage('Error updating expense', 'error');
+            this.updateSyncStatus('❌ Sync Error');
+        }
+    }
+
+    editExpense(expenseId) {
+        const expense = this.expenses.find(exp => exp.id === expenseId);
+        if (!expense) return;
+
+        this.editingExpenseId = expenseId;
+
+        // Populate edit form
+        document.getElementById('editDate').value = expense.date;
+        document.getElementById('editAmount').value = expense.amount;
+        document.getElementById('editMainCategory').value = expense.mainCategory;
+        document.getElementById('editSubCategory').value = expense.subCategory;
+        document.getElementById('editPaymentMode').value = expense.paymentMode;
+        document.getElementById('editDescription').value = expense.description || '';
+
+        // Populate dropdowns if needed
+        this.populateEditDropdowns();
+
+        // Show modal
+        document.getElementById('editExpenseModal').classList.add('active');
+    }
+
+    closeEditModal() {
+        document.getElementById('editExpenseModal').classList.remove('active');
+        this.editingExpenseId = null;
+    }
+
+    async deleteExpense(expenseId) {
+        if (!confirm('Are you sure you want to delete this expense?')) return;
+
+        try {
+            this.updateSyncStatus('⏳ Syncing...');
+            await deleteDoc(doc(db, 'families', this.familyId, 'expenses', expenseId));
+            this.showMessage('Expense deleted successfully', 'success');
+            this.updateSyncStatus(this.isOnline ? '🟢 Synced' : '🔴 Offline');
+        } catch (error) {
+            console.error('Error deleting expense:', error);
+            this.showMessage('Error deleting expense', 'error');
+        }
+    }
+
+    // Category Management Functions with Search
+    switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(tabName).classList.add('active');
+
+        // Clear search when switching tabs
+        const searchInput = document.getElementById('search' + this.capitalizeFirst(tabName.replace('-', '')));
+        if (searchInput) {
+            searchInput.value = '';
+        }
+    }
+
+    capitalizeFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    filterCategoryList(categoryType, searchTerm) {
+        const listId = categoryType === 'main' ? 'mainCategoriesList' : 
+                      categoryType === 'sub' ? 'subCategoriesList' : 'paymentModesList';
+        const list = document.getElementById(listId);
+        if (!list) return;
+
+        const items = list.querySelectorAll('.category-item');
+        const lowercaseSearch = searchTerm.toLowerCase();
+
+        items.forEach(item => {
+            const categoryName = item.querySelector('.category-name').textContent.toLowerCase();
+            if (categoryName.includes(lowercaseSearch)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Show "no results" message if needed
+        const visibleItems = Array.from(items).filter(item => item.style.display !== 'none');
+        let noResultsMsg = list.querySelector('.no-results-message');
+
+        if (visibleItems.length === 0 && searchTerm.trim() !== '') {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('li');
+                noResultsMsg.className = 'no-results-message';
+                noResultsMsg.innerHTML = '<em style="color: #666; padding: 1rem;">No categories found</em>';
+                list.appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    }
+
+    async addMainCategory() {
+        const input = document.getElementById('newMainCategory');
+        const name = input.value.trim();
+
+        if (!name) {
+            this.showMessage('Please enter a category name', 'error');
+            return;
+        }
+
+        if (this.categories.main.some(cat => cat.name.toLowerCase() === name.toLowerCase())) {
+            this.showMessage('Category already exists', 'error');
+            return;
+        }
+
+        try {
+            const newCategories = {
+                ...this.categories,
+                main: [...this.categories.main, { name: name }]
+            };
+
+            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
+
+            input.value = '';
+            this.showMessage('Main category added successfully', 'success');
+
+        } catch (error) {
+            console.error('Error adding main category:', error);
+            this.showMessage('Error adding category', 'error');
+        }
+    }
+
+    async addSubCategory() {
+        const input = document.getElementById('newSubCategory');
+        const name = input.value.trim();
+
+        if (!name) {
+            this.showMessage('Please enter a sub-category name', 'error');
+            return;
+        }
+
+        if (this.categories.sub.some(sub => sub.name.toLowerCase() === name.toLowerCase())) {
+            this.showMessage('Sub-category already exists', 'error');
+            return;
+        }
+
+        try {
+            const newCategories = {
+                ...this.categories,
+                sub: [...this.categories.sub, { name: name }]
+            };
+
+            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
+
+            input.value = '';
+            this.showMessage('Sub-category added successfully', 'success');
+
+        } catch (error) {
+            console.error('Error adding sub-category:', error);
+            this.showMessage('Error adding sub-category', 'error');
+        }
+    }
+
+    async addPaymentMode() {
+        const input = document.getElementById('newPaymentMode');
+        const name = input.value.trim();
+
+        if (!name) {
+            this.showMessage('Please enter a payment mode name', 'error');
+            return;
+        }
+
+        if (this.categories.payment.some(mode => mode.name.toLowerCase() === name.toLowerCase())) {
+            this.showMessage('Payment mode already exists', 'error');
+            return;
+        }
+
+        try {
+            const newCategories = {
+                ...this.categories,
+                payment: [...this.categories.payment, { name: name }]
+            };
+
+            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
+
+            input.value = '';
+            this.showMessage('Payment mode added successfully', 'success');
+
+        } catch (error) {
+            console.error('Error adding payment mode:', error);
+            this.showMessage('Error adding payment mode', 'error');
+        }
+    }
+
+    async deleteMainCategory(categoryName) {
+        if (!confirm(`Are you sure you want to delete "${categoryName}"?\nThis may affect existing expenses.`)) return;
+
+        try {
+            const newCategories = {
+                ...this.categories,
+                main: this.categories.main.filter(cat => cat.name !== categoryName)
+            };
+
+            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
+            this.showMessage('Main category deleted successfully', 'success');
+
+        } catch (error) {
+            console.error('Error deleting main category:', error);
+            this.showMessage('Error deleting category', 'error');
+        }
+    }
+
+    async deleteSubCategory(categoryName) {
+        if (!confirm(`Are you sure you want to delete "${categoryName}"?\nThis may affect existing expenses.`)) return;
+
+        try {
+            const newCategories = {
+                ...this.categories,
+                sub: this.categories.sub.filter(sub => sub.name !== categoryName)
+            };
+
+            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
+            this.showMessage('Sub-category deleted successfully', 'success');
+
+        } catch (error) {
+            console.error('Error deleting sub-category:', error);
+            this.showMessage('Error deleting sub-category', 'error');
+        }
+    }
+
+    async deletePaymentMode(modeName) {
+        if (!confirm(`Are you sure you want to delete "${modeName}"?`)) return;
+
+        try {
+            const newCategories = {
+                ...this.categories,
+                payment: this.categories.payment.filter(mode => mode.name !== modeName)
+            };
+
+            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
+            this.showMessage('Payment mode deleted successfully', 'success');
+
+        } catch (error) {
+            console.error('Error deleting payment mode:', error);
+            this.showMessage('Error deleting payment mode', 'error');
+        }
+    }
+
+    updateCategoryManagement() {
+        this.renderMainCategoriesList();
+        this.renderSubCategoriesList();
+        this.renderPaymentModesList();
+    }
+
+    renderMainCategoriesList() {
+        const list = document.getElementById('mainCategoriesList');
+        if (!list || !this.categories.main) return;
+
+        list.innerHTML = '';
+        this.categories.main.forEach(category => {
+            const li = document.createElement('li');
+            li.className = 'category-item';
+            li.innerHTML = `
+                <span class="category-name">${category.name}</span>
+                <button class="btn btn-danger btn-small" onclick="familyTracker.deleteMainCategory('${category.name}')">
+                    Delete
+                </button>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    renderSubCategoriesList() {
+        const list = document.getElementById('subCategoriesList');
+        if (!list || !this.categories.sub) return;
+
+        list.innerHTML = '';
+        this.categories.sub.forEach(subCat => {
+            const li = document.createElement('li');
+            li.className = 'category-item';
+            li.innerHTML = `
+                <span class="category-name">${subCat.name}</span>
+                <button class="btn btn-danger btn-small" onclick="familyTracker.deleteSubCategory('${subCat.name}')">
+                    Delete
+                </button>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    renderPaymentModesList() {
+        const list = document.getElementById('paymentModesList');
+        if (!list || !this.categories.payment) return;
+
+        list.innerHTML = '';
+        this.categories.payment.forEach(mode => {
+            const li = document.createElement('li');
+            li.className = 'category-item';
+            li.innerHTML = `
+                <span class="category-name">${mode.name}</span>
+                <button class="btn btn-danger btn-small" onclick="familyTracker.deletePaymentMode('${mode.name}')">
+                    Delete
+                </button>
+            `;
+            list.appendChild(li);
+        });
     }
 
     // Analytics Functions
@@ -547,100 +906,6 @@ class FamilyExpenseTracker {
         });
     }
 
-    // Category Management
-    async addMainCategory() {
-        const input = document.getElementById('newMainCategory');
-        const name = input.value.trim();
-
-        if (!name) {
-            this.showMessage('Please enter a category name', 'error');
-            return;
-        }
-
-        if (this.categories.main.some(cat => cat.name.toLowerCase() === name.toLowerCase())) {
-            this.showMessage('Category already exists', 'error');
-            return;
-        }
-
-        try {
-            const newCategories = {
-                ...this.categories,
-                main: [...this.categories.main, { name: name }]
-            };
-
-            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
-
-            input.value = '';
-            this.showMessage('Main category added successfully', 'success');
-
-        } catch (error) {
-            console.error('Error adding main category:', error);
-            this.showMessage('Error adding category', 'error');
-        }
-    }
-
-    async addSubCategory() {
-        const input = document.getElementById('newSubCategory');
-        const name = input.value.trim();
-
-        if (!name) {
-            this.showMessage('Please enter a sub-category name', 'error');
-            return;
-        }
-
-        if (this.categories.sub.some(sub => sub.name.toLowerCase() === name.toLowerCase())) {
-            this.showMessage('Sub-category already exists', 'error');
-            return;
-        }
-
-        try {
-            const newCategories = {
-                ...this.categories,
-                sub: [...this.categories.sub, { name: name }]
-            };
-
-            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
-
-            input.value = '';
-            this.showMessage('Sub-category added successfully', 'success');
-
-        } catch (error) {
-            console.error('Error adding sub-category:', error);
-            this.showMessage('Error adding sub-category', 'error');
-        }
-    }
-
-    async addPaymentMode() {
-        const input = document.getElementById('newPaymentMode');
-        const name = input.value.trim();
-
-        if (!name) {
-            this.showMessage('Please enter a payment mode name', 'error');
-            return;
-        }
-
-        if (this.categories.payment.some(mode => mode.name.toLowerCase() === name.toLowerCase())) {
-            this.showMessage('Payment mode already exists', 'error');
-            return;
-        }
-
-        try {
-            const newCategories = {
-                ...this.categories,
-                payment: [...this.categories.payment, { name: name }]
-            };
-
-            await setDoc(doc(db, 'families', this.familyId, 'settings', 'categories'), newCategories);
-
-            input.value = '';
-            this.showMessage('Payment mode added successfully', 'success');
-
-        } catch (error) {
-            console.error('Error adding payment mode:', error);
-            this.showMessage('Error adding payment mode', 'error');
-        }
-    }
-
     // UI Helper Methods
     showAuthSection() {
         document.getElementById('authSection').style.display = 'block';
@@ -677,6 +942,7 @@ class FamilyExpenseTracker {
         this.populateSubCategories();
         this.populatePaymentModes();
         this.populateFilters();
+        this.populateEditDropdowns();
     }
 
     populateMainCategories() {
@@ -716,6 +982,42 @@ class FamilyExpenseTracker {
             option.textContent = mode.name;
             select.appendChild(option);
         });
+    }
+
+    populateEditDropdowns() {
+        // Populate edit form dropdowns
+        const editMainSelect = document.getElementById('editMainCategory');
+        if (editMainSelect && this.categories.main) {
+            editMainSelect.innerHTML = '<option value="">Select Main Category</option>';
+            this.categories.main.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.name;
+                option.textContent = category.name;
+                editMainSelect.appendChild(option);
+            });
+        }
+
+        const editSubSelect = document.getElementById('editSubCategory');
+        if (editSubSelect && this.categories.sub) {
+            editSubSelect.innerHTML = '<option value="">Select Sub Category</option>';
+            this.categories.sub.forEach(subCat => {
+                const option = document.createElement('option');
+                option.value = subCat.name;
+                option.textContent = subCat.name;
+                editSubSelect.appendChild(option);
+            });
+        }
+
+        const editPaymentSelect = document.getElementById('editPaymentMode');
+        if (editPaymentSelect && this.categories.payment) {
+            editPaymentSelect.innerHTML = '<option value="">Select Payment Mode</option>';
+            this.categories.payment.forEach(mode => {
+                const option = document.createElement('option');
+                option.value = mode.name;
+                option.textContent = mode.name;
+                editPaymentSelect.appendChild(option);
+            });
+        }
     }
 
     populateFilters() {
@@ -836,13 +1138,26 @@ class FamilyExpenseTracker {
 
         const a = document.createElement('a');
         a.href = url;
-        a.download = `family_expenses_INR_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `family_expenses_${new Date().toISOString().split('T')[0]}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
 
         this.showMessage('CSV exported successfully!', 'success');
+    }
+
+    openCategoryModal() {
+        const modal = document.getElementById('categoryModal');
+        if (modal) {
+            modal.classList.add('active');
+            this.updateCategoryManagement();
+        }
+    }
+
+    closeCategoryModal() {
+        const modal = document.getElementById('categoryModal');
+        if (modal) modal.classList.remove('active');
     }
 
     showMessage(message, type = 'success') {
@@ -862,8 +1177,17 @@ class FamilyExpenseTracker {
         }, 4000);
     }
 
-    // Additional methods for edit/delete, category management, etc.
-    // ... (many more methods for full functionality)
+    setupPWA() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registered successfully');
+                })
+                .catch(error => {
+                    console.log('SW registration failed');
+                });
+        }
+    }
 }
 
 // Initialize the app

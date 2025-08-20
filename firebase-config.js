@@ -1,6 +1,4 @@
-// Firebase Configuration for INR Family Expense Tracker
-// Replace these values with your actual Firebase project config
-
+// Firebase Configuration for Custom Categories
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
@@ -16,13 +14,8 @@ const firebaseConfig = {
     measurementId: "G-6VEG1531RJ"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
-
-// Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
 
-console.log('Firebase initialized for INR expense tracker');
+console.log('Firebase initialized with custom categories');
