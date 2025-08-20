@@ -1,4 +1,4 @@
-/* Enhanced CSS for Family Expense Tracker with Analytics Dashboard */
+/* Enhanced CSS for Family Expense Tracker v3.0 - Fixed Layout */
 
 /* Base styles remain the same */
 * {
@@ -141,7 +141,191 @@ body {
     font-weight: 600;
 }
 
-/* Analytics Dashboard */
+/* PRIORITY 1: Enhanced Expense Form (TOP SECTION) */
+.expense-form-section {
+    margin-bottom: 2rem;
+}
+
+.expense-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+    transform: translateY(-1px);
+}
+
+/* PRIORITY 2: Enhanced Expenses List (MIDDLE SECTION) */
+.expenses-list-section {
+    margin-bottom: 2rem;
+}
+
+.quick-summary {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.summary-label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.summary-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2196f3;
+}
+
+/* Enhanced Filters */
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.filters select,
+.filters input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    min-width: 160px;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.filters select:focus,
+.filters input:focus {
+    outline: none;
+    border-color: #2196f3;
+}
+
+/* Enhanced Table */
+.table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.expenses-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.expenses-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.25rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+}
+
+.expenses-table td {
+    padding: 1.25rem;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.expenses-table tr:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+.category-cell {
+    line-height: 1.4;
+}
+
+.category-cell strong {
+    color: #2196f3;
+    font-weight: 600;
+}
+
+.category-cell small {
+    color: #666;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.category-cell .description {
+    color: #888;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.amount-cell {
+    font-weight: 700;
+    color: #f44336;
+    font-size: 1.1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 3rem;
+}
+
+/* PRIORITY 3: Analytics Dashboard (BOTTOM SECTION) */
 .analytics-section {
     margin-bottom: 2rem;
 }
@@ -279,49 +463,6 @@ body {
     text-align: center;
 }
 
-/* Enhanced Form Styles */
-.expense-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #555;
-    font-size: 0.9rem;
-}
-
-.form-group input,
-.form-group select {
-    padding: 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    font-size: 1rem;
-    background: white;
-    transition: all 0.2s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #2196f3;
-    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
-    transform: translateY(-1px);
-}
-
 /* Enhanced Buttons */
 .btn {
     padding: 1rem 1.5rem;
@@ -389,6 +530,16 @@ body {
     transform: translateY(-1px);
 }
 
+.btn-edit {
+    background: #ff9800;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #f57c00;
+    transform: translateY(-1px);
+}
+
 .btn-small {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
@@ -396,97 +547,6 @@ body {
 
 .btn-full {
     width: 100%;
-}
-
-/* Enhanced Filters */
-.filters {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-}
-
-.filters select,
-.filters input {
-    padding: 0.75rem 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    min-width: 160px;
-    background: white;
-    transition: border-color 0.2s ease;
-}
-
-.filters select:focus,
-.filters input:focus {
-    outline: none;
-    border-color: #2196f3;
-}
-
-/* Enhanced Table */
-.table-container {
-    overflow-x: auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.expenses-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-}
-
-.expenses-table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 1.25rem;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: none;
-}
-
-.expenses-table td {
-    padding: 1.25rem;
-    border-bottom: 1px solid #f0f0f0;
-    vertical-align: middle;
-}
-
-.expenses-table tr:hover {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
-    transform: scale(1.01);
-    transition: all 0.2s ease;
-}
-
-.category-cell {
-    line-height: 1.4;
-}
-
-.category-cell strong {
-    color: #2196f3;
-    font-weight: 600;
-}
-
-.category-cell small {
-    color: #666;
-    font-size: 0.85rem;
-    font-style: italic;
-}
-
-.amount-cell {
-    font-weight: 700;
-    color: #f44336;
-    font-size: 1.1rem;
-}
-
-.no-data {
-    text-align: center;
-    color: #999;
-    font-style: italic;
-    padding: 3rem;
 }
 
 /* Modal Enhancements */
@@ -578,6 +638,89 @@ body {
     gap: 0.75rem;
     justify-content: flex-end;
     margin-top: 1.5rem;
+}
+
+/* Category Management */
+.category-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    color: #2196f3;
+    border-bottom-color: #2196f3;
+}
+
+.tab-btn:hover {
+    color: #2196f3;
+    background: rgba(33, 150, 243, 0.05);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.add-category {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.add-category input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.add-category input:focus {
+    outline: none;
+    border-color: #2196f3;
+}
+
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.category-item:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.category-name {
+    font-weight: 500;
+    color: #333;
 }
 
 .info-text {
@@ -676,13 +819,27 @@ body {
         min-width: auto;
     }
 
+    .quick-summary {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .summary-item {
+        align-items: flex-start;
+    }
+
     .months-chart {
         height: 120px;
     }
 
-    .expenses-table th:nth-child(2),
-    .expenses-table td:nth-child(2) {
+    .expenses-table th:nth-child(4),
+    .expenses-table td:nth-child(4) {
         display: none;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
     .modal-content {
@@ -694,6 +851,15 @@ body {
     .modal-body {
         padding: 1rem;
     }
+
+    .category-tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -701,8 +867,8 @@ body {
         padding: 1.5rem;
     }
 
-    .expenses-table th:nth-child(4),
-    .expenses-table td:nth-child(4) {
+    .expenses-table th:nth-child(2),
+    .expenses-table td:nth-child(2) {
         display: none;
     }
 
@@ -714,6 +880,21 @@ body {
 
     .summary-amount {
         font-size: 1.25rem;
+    }
+
+    .add-category {
+        flex-direction: column;
+    }
+
+    .category-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .action-buttons .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
     }
 }
 
@@ -784,4 +965,19 @@ button:focus,
 input:focus,
 select:focus {
     outline: none;
+}
+
+/* Edit modal specific styles */
+#editExpenseModal .expense-form {
+    gap: 1rem;
+}
+
+#editExpenseModal .form-row {
+    margin-bottom: 0;
+}
+
+#editExpenseModal .modal-actions {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
 }

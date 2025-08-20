@@ -88,60 +88,7 @@
 
             <!-- Main Content -->
             <main class="main">
-                <!-- Enhanced Analytics Dashboard -->
-                <section class="analytics-section">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2>📊 Spending Analytics</h2>
-
-                            <!-- Main Summary Cards -->
-                            <div class="summary-cards">
-                                <div class="summary-card">
-                                    <div class="summary-card-header">
-                                        <h3>This Month</h3>
-                                        <span class="summary-icon">📅</span>
-                                    </div>
-                                    <div class="summary-amount" id="monthlyAmount">$0.00</div>
-                                    <div class="summary-progress">
-                                        <span id="monthProgress">0% of month elapsed</span>
-                                    </div>
-                                </div>
-
-                                <div class="summary-card">
-                                    <div class="summary-card-header">
-                                        <h3>This Year</h3>
-                                        <span class="summary-icon">📈</span>
-                                    </div>
-                                    <div class="summary-amount" id="yearlyAmount">$0.00</div>
-                                    <div class="summary-progress">
-                                        <span id="yearProgress">0% of year elapsed</span>
-                                    </div>
-                                </div>
-
-                                <div class="summary-card">
-                                    <div class="summary-card-header">
-                                        <h3>Total Filtered</h3>
-                                        <span class="summary-icon">💰</span>
-                                    </div>
-                                    <div class="summary-amount" id="totalAmount">$0.00</div>
-                                    <div class="summary-progress">
-                                        <span id="totalCount">0 expenses</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Last 3 Months Chart -->
-                            <div class="chart-section">
-                                <h3>📊 Last 3 Months Spending</h3>
-                                <div class="chart-container">
-                                    <div id="last3MonthsChart" class="months-chart"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Expense Entry Form -->
+                <!-- 1. ADD EXPENSE FORM (TOP PRIORITY) -->
                 <section class="expense-form-section">
                     <div class="card">
                         <div class="card-body">
@@ -184,8 +131,8 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="addedBy">Added By</label>
-                                        <input type="text" id="addedBy" name="addedBy" placeholder="Family member name">
+                                        <label for="description">Description (optional)</label>
+                                        <input type="text" id="description" name="description" placeholder="Brief description">
                                     </div>
                                 </div>
 
@@ -195,19 +142,28 @@
                     </div>
                 </section>
 
-                <!-- Expenses List -->
+                <!-- 2. RECENT EXPENSES LIST (SECOND PRIORITY) -->
                 <section class="expenses-list-section">
                     <div class="card">
                         <div class="card-body">
-                            <h2>📋 Family Expenses</h2>
+                            <h2>📋 Recent Expenses</h2>
+
+                            <!-- Quick Summary -->
+                            <div class="quick-summary">
+                                <div class="summary-item">
+                                    <span class="summary-label">Total Expenses:</span>
+                                    <span class="summary-value" id="totalAmount">$0.00</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Total Count:</span>
+                                    <span class="summary-value" id="totalCount">0</span>
+                                </div>
+                            </div>
 
                             <!-- Filters -->
                             <div class="filters">
                                 <select id="categoryFilter">
                                     <option value="">All Categories</option>
-                                </select>
-                                <select id="memberFilter">
-                                    <option value="">All Members</option>
                                 </select>
                                 <input type="month" id="monthFilter" placeholder="Filter by month">
                             </div>
@@ -219,7 +175,7 @@
                                             <th>Date</th>
                                             <th>Category</th>
                                             <th>Amount</th>
-                                            <th>Added By</th>
+                                            <th>Payment</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -227,6 +183,59 @@
                                         <!-- Expenses will be populated here -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. ANALYTICS DASHBOARD (BOTTOM) -->
+                <section class="analytics-section">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2>📊 Spending Analytics</h2>
+
+                            <!-- Main Summary Cards -->
+                            <div class="summary-cards">
+                                <div class="summary-card">
+                                    <div class="summary-card-header">
+                                        <h3>This Month</h3>
+                                        <span class="summary-icon">📅</span>
+                                    </div>
+                                    <div class="summary-amount" id="monthlyAmount">$0.00</div>
+                                    <div class="summary-progress">
+                                        <span id="monthProgress">0% of month elapsed</span>
+                                    </div>
+                                </div>
+
+                                <div class="summary-card">
+                                    <div class="summary-card-header">
+                                        <h3>This Year</h3>
+                                        <span class="summary-icon">📈</span>
+                                    </div>
+                                    <div class="summary-amount" id="yearlyAmount">$0.00</div>
+                                    <div class="summary-progress">
+                                        <span id="yearProgress">0% of year elapsed</span>
+                                    </div>
+                                </div>
+
+                                <div class="summary-card">
+                                    <div class="summary-card-header">
+                                        <h3>Average Daily</h3>
+                                        <span class="summary-icon">💰</span>
+                                    </div>
+                                    <div class="summary-amount" id="dailyAverage">$0.00</div>
+                                    <div class="summary-progress">
+                                        <span id="dailyDescription">This month</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Last 3 Months Chart -->
+                            <div class="chart-section">
+                                <h3>📊 Last 3 Months Spending</h3>
+                                <div class="chart-container">
+                                    <div id="last3MonthsChart" class="months-chart"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -260,12 +269,12 @@
 
                 <!-- Sub Categories Tab -->
                 <div id="sub-categories" class="tab-content">
-                    <p class="info-text">ℹ️ Sub-categories are now independent - they can be used with any main category</p>
+                    <p class="info-text">ℹ️ Sub-categories are independent and can be used with any main category</p>
                     <div class="add-category">
                         <input type="text" id="newSubCategory" placeholder="Enter new sub category">
                         <button id="addSubCategory" class="btn btn-primary">Add</button>
                     </div>
-                    <div id="subCategoriesList" class="sub-categories-container"></div>
+                    <ul id="subCategoriesList" class="category-list"></ul>
                 </div>
 
                 <!-- Payment Modes Tab -->
@@ -276,6 +285,66 @@
                     </div>
                     <ul id="paymentModesList" class="category-list"></ul>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Expense Modal -->
+    <div id="editExpenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Expense</h2>
+                <button class="modal-close" id="closeEditModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editExpenseForm" class="expense-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editDate">Date</label>
+                            <input type="date" id="editDate" name="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editAmount">Amount ($)</label>
+                            <input type="number" id="editAmount" name="amount" step="0.01" min="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editMainCategory">Main Category</label>
+                            <select id="editMainCategory" name="mainCategory" required>
+                                <option value="">Select Main Category</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editSubCategory">Sub Category</label>
+                            <select id="editSubCategory" name="subCategory" required>
+                                <option value="">Select Sub Category</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editPaymentMode">Payment Mode</label>
+                            <select id="editPaymentMode" name="paymentMode" required>
+                                <option value="">Select Payment Mode</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editDescription">Description</label>
+                            <input type="text" id="editDescription" name="description" placeholder="Brief description">
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -298,6 +367,6 @@
 
     <!-- Firebase Config and App -->
     <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="app-firebase-v2.js"></script>
+    <script type="module" src="app-firebase-v3.js"></script>
 </body>
 </html>

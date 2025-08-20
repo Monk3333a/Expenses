@@ -1,15 +1,15 @@
-// Family Expense Tracker v2.0 Service Worker
-// Enhanced offline functionality with Firebase caching
+// Family Expense Tracker v3.0 Service Worker
+// Enhanced offline functionality
 
-const CACHE_NAME = 'family-expense-tracker-v2';
-const STATIC_CACHE_NAME = 'static-v2';
+const CACHE_NAME = 'family-expense-tracker-v3';
+const STATIC_CACHE_NAME = 'static-v3';
 
 // Files to cache for offline use
 const STATIC_FILES = [
     '/',
     '/index.html',
     '/style.css',
-    '/app-firebase-v2.js',
+    '/app-firebase-v3.js',
     '/firebase-config.js',
     '/manifest.json',
     // Firebase SDK files (cached from CDN)
@@ -20,7 +20,7 @@ const STATIC_FILES = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-    console.log('[SW] Installing service worker v2.0');
+    console.log('[SW] Installing service worker v3.0');
 
     event.waitUntil(
         caches.open(STATIC_CACHE_NAME)
@@ -42,7 +42,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activating service worker v2.0');
+    console.log('[SW] Activating service worker v3.0');
 
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -79,7 +79,7 @@ self.addEventListener('fetch', (event) => {
     }
 
     // Handle static assets with cache-first strategy
-    if (STATIC_FILES.some(file => request.url.includes(file.replace(/^\\//, '')))) {
+    if (STATIC_FILES.some(file => request.url.includes(file.replace(/^\//, '')))) {
         event.respondWith(
             caches.match(request).then((cachedResponse) => {
                 if (cachedResponse) {
@@ -130,31 +130,4 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Handle background sync for Firebase
-self.addEventListener('sync', (event) => {
-    console.log('[SW] Background sync triggered:', event.tag);
-
-    if (event.tag === 'expense-sync') {
-        event.waitUntil(
-            self.clients.matchAll().then(clients => {
-                clients.forEach(client => {
-                    client.postMessage({
-                        type: 'BACKGROUND_SYNC',
-                        tag: event.tag
-                    });
-                });
-            })
-        );
-    }
-});
-
-// Handle Firebase messaging
-self.addEventListener('message', (event) => {
-    console.log('[SW] Message received:', event.data);
-
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-});
-
-console.log('[SW] Service worker v2.0 script loaded');
+console.log('[SW] Service worker v3.0 script loaded with enhanced functionality');
