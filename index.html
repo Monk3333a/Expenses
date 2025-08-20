@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Expense Tracker</title>
+
+    <!-- PWA meta tags -->
+    <meta name="description" content="Simple PWA for tracking daily expenses">
+    <meta name="theme-color" content="#2196f3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ExpenseTracker">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%232196f3'/%3E%3Ctext x='50' y='65' text-anchor='middle' fill='white' font-size='60' font-family='Arial'%3E$%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%232196f3'/%3E%3Ctext x='50' y='65' text-anchor='middle' fill='white' font-size='60' font-family='Arial'%3E$%3C/text%3E%3C/svg%3E">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Simple Expense Tracker</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="manageBtn">Manage Categories</button>
+                <button class="btn btn-primary" id="exportBtn">Export CSV</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Expense Entry Form -->
+            <section class="expense-form-section">
+                <div class="card">
+                    <div class="card-body">
+                        <h2>Add New Expense</h2>
+                        <form id="expenseForm" class="expense-form">
+                            <div class="form-group">
+                                <label for="expenseDate">Date</label>
+                                <input type="date" id="expenseDate" name="date" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mainCategory">Main Category</label>
+                                <select id="mainCategory" name="mainCategory" required>
+                                    <option value="">Select Main Category</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="subCategory">Sub Category</label>
+                                <select id="subCategory" name="subCategory" required>
+                                    <option value="">Select Sub Category</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="amount">Amount ($)</label>
+                                <input type="number" id="amount" name="amount" step="0.01" min="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="paymentMode">Payment Mode</label>
+                                <select id="paymentMode" name="paymentMode" required>
+                                    <option value="">Select Payment Mode</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-full">Add Expense</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expenses List -->
+            <section class="expenses-list-section">
+                <div class="card">
+                    <div class="card-body">
+                        <h2>Your Expenses</h2>
+                        <div class="expenses-summary">
+                            <p>Total Expenses: <span id="totalAmount">$0.00</span></p>
+                        </div>
+                        <div class="table-container">
+                            <table id="expensesTable" class="expenses-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Main Category</th>
+                                        <th>Sub Category</th>
+                                        <th>Amount</th>
+                                        <th>Payment Mode</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expensesTableBody">
+                                    <!-- Expenses will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Category Management Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Manage Categories</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="category-tabs">
+                    <button class="tab-btn active" data-tab="main-categories">Main Categories</button>
+                    <button class="tab-btn" data-tab="sub-categories">Sub Categories</button>
+                    <button class="tab-btn" data-tab="payment-modes">Payment Modes</button>
+                </div>
+
+                <!-- Main Categories Tab -->
+                <div id="main-categories" class="tab-content active">
+                    <div class="add-category">
+                        <input type="text" id="newMainCategory" placeholder="Enter new main category">
+                        <button id="addMainCategory" class="btn btn-primary">Add</button>
+                    </div>
+                    <ul id="mainCategoriesList" class="category-list"></ul>
+                </div>
+
+                <!-- Sub Categories Tab -->
+                <div id="sub-categories" class="tab-content">
+                    <div class="add-category">
+                        <select id="parentCategorySelect">
+                            <option value="">Select Main Category</option>
+                        </select>
+                        <input type="text" id="newSubCategory" placeholder="Enter new sub category">
+                        <button id="addSubCategory" class="btn btn-primary">Add</button>
+                    </div>
+                    <div id="subCategoriesList" class="sub-categories-container"></div>
+                </div>
+
+                <!-- Payment Modes Tab -->
+                <div id="payment-modes" class="tab-content">
+                    <div class="add-category">
+                        <input type="text" id="newPaymentMode" placeholder="Enter new payment mode">
+                        <button id="addPaymentMode" class="btn btn-primary">Add</button>
+                    </div>
+                    <ul id="paymentModesList" class="category-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="message-container"></div>
+
+    <!-- Confirmation Dialog -->
+    <div id="confirmDialog" class="modal">
+        <div class="modal-content small">
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+                <div class="modal-actions">
+                    <button id="confirmYes" class="btn btn-danger">Yes</button>
+                    <button id="confirmNo" class="btn btn-secondary">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
