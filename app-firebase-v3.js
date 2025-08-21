@@ -1,4 +1,4 @@
-// Enhanced Family Expense Tracker v3.0 - Error Handling Fixed
+// Enhanced Family Expense Tracker v3.1 - With Pagination
 import { auth, db } from './firebase-config.js';
 import { 
     signInWithEmailAndPassword, 
@@ -37,6 +37,11 @@ class FamilyExpenseTracker {
         this.isOnline = navigator.onLine;
         this.editingExpenseId = null;
 
+        // Pagination properties
+        this.currentPage = 1;
+        this.itemsPerPage = 25;
+        this.filteredExpenses = [];
+
         this.init();
     }
 
@@ -45,10 +50,92 @@ class FamilyExpenseTracker {
             this.setupAuthListeners();
             this.setupEventListeners();
             this.setupNetworkListeners();
+            this.setupPaginationListeners();
 
             onAuthStateChanged(auth, (user) => {
                 this.handleAuthStateChange(user);
             });
+        });
+    }
+
+    setupPaginationListeners() {
+        // Top pagination buttons
+        document.getElementById('prevBtn')?.addEventListener('click', () => this.goToPreviousPage());
+        document.getElementById('nextBtn')?.addEventListener('click', () => this.goToNextPage());
+
+        // Bottom pagination buttons
+        document.getElementById('prevBtnBottom')?.addEventListener('click', () => this.goToPreviousPage());
+        document.getElementById('nextBtnBottom')?.addEventListener('click', () => this.goToNextPage());
+    }
+
+    goToPreviousPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.renderExpensesList();
+            this.updatePaginationControls();
+        }
+    }
+
+    goToNextPage() {
+        const totalPages = this.getTotalPages();
+        if (this.currentPage < totalPages) {
+            this.currentPage++;
+            this.renderExpensesList();
+            this.updatePaginationControls();
+        }
+    }
+
+    getTotalPages() {
+        return Math.ceil(this.filteredExpenses.length / this.itemsPerPage);
+    }
+
+    updatePaginationControls() {
+        const totalPages = this.getTotalPages();
+        const totalItems = this.filteredExpenses.length;
+        const startItem = ((this.currentPage - 1) * this.itemsPerPage) + 1;
+        const endItem = Math.min(this.currentPage * this.itemsPerPage, totalItems);
+
+        // Update pagination info (top and bottom)
+        const paginationText = totalItems > 0 ? 
+            `Page ${this.currentPage} of ${totalPages} (${startItem}-${endItem} of ${totalItems})` :
+            'No expenses found';
+
+        document.getElementById('paginationInfo').textContent = paginationText;
+        document.getElementById('paginationInfoBottom').textContent = paginationText;
+
+        // Update showing count in summary
+        const showingText = totalItems > 0 ? `${startItem}-${endItem} of ${totalItems}` : '0 of 0';
+        const showingEl = document.getElementById('showingCount');
+        if (showingEl) showingEl.textContent = showingText;
+
+        // Enable/disable buttons
+        const prevButtons = [document.getElementById('prevBtn'), document.getElementById('prevBtnBottom')];
+        const nextButtons = [document.getElementById('nextBtn'), document.getElementById('nextBtnBottom')];
+
+        prevButtons.forEach(btn => {
+            if (btn) {
+                btn.disabled = this.currentPage <= 1;
+                btn.style.opacity = this.currentPage <= 1 ? '0.5' : '1';
+            }
+        });
+
+        nextButtons.forEach(btn => {
+            if (btn) {
+                btn.disabled = this.currentPage >= totalPages;
+                btn.style.opacity = this.currentPage >= totalPages ? '0.5' : '1';
+            }
+        });
+
+        // Hide pagination if only one page
+        const paginationControls = [
+            document.getElementById('paginationTop'),
+            document.getElementById('paginationBottom')
+        ];
+
+        paginationControls.forEach(control => {
+            if (control) {
+                control.style.display = totalPages <= 1 ? 'none' : 'flex';
+            }
         });
     }
 
@@ -110,9 +197,7 @@ class FamilyExpenseTracker {
                 this.familyId = userData.familyId;
                 console.log('User data loaded. Family ID:', this.familyId);
             } else {
-                // User document doesn't exist - this is normal for new users
                 console.log('User document does not exist yet - will be created during signup');
-                // Don't show error for this case
                 return;
             }
 
@@ -123,7 +208,6 @@ class FamilyExpenseTracker {
                     console.log('Categories loaded successfully');
                 } catch (categoryError) {
                     console.error('Error loading categories:', categoryError);
-                    // Only show error for category loading if it's a real issue
                     if (categoryError.code !== 'permission-denied') {
                         this.showMessage('Categories will be available after first expense', 'info');
                     }
@@ -133,16 +217,13 @@ class FamilyExpenseTracker {
         } catch (error) {
             console.error('Error in loadUserData:', error);
 
-            // Only show error message for serious issues
             if (error.code === 'permission-denied') {
                 this.showMessage('Permission denied. Please check your Firebase settings.', 'error');
             } else if (error.code === 'unavailable') {
                 this.showMessage('Database temporarily unavailable. Please try again.', 'error');
             } else if (!this.currentUser) {
-                // Auth state changed while loading - ignore
                 console.log('Auth state changed during load - ignoring error');
             } else {
-                // Only show generic error if it's not a common issue
                 console.log('User data load had minor issue, but continuing...');
                 this.showMessage('Some data loading slowly - please wait', 'info');
             }
@@ -164,12 +245,11 @@ class FamilyExpenseTracker {
                 console.log('Categories loaded:', Object.keys(this.categories));
             } else {
                 console.log('Categories document does not exist - using defaults');
-                // Initialize with custom categories for new families
                 await this.initializeCustomCategories(this.familyId);
             }
         } catch (error) {
             console.error('Error loading family categories:', error);
-            throw error; // Re-throw to be handled by caller
+            throw error;
         }
     }
 
@@ -446,7 +526,7 @@ class FamilyExpenseTracker {
             snapshot.forEach((doc) => {
                 this.expenses.push({ id: doc.id, ...doc.data() });
             });
-            this.renderExpensesList();
+            this.applyFilters(); // This will also render the list with pagination
             this.updateAnalytics();
             this.updateSyncStatus(this.isOnline ? '🟢 Synced' : '🔴 Offline');
         }, (error) => {
@@ -463,7 +543,6 @@ class FamilyExpenseTracker {
             }
         }, (error) => {
             console.error('Error in categories listener:', error);
-            // Don't show error message for categories - they'll load eventually
         });
 
         this.unsubscribers.push(unsubExpenses, unsubCategories);
@@ -879,14 +958,12 @@ class FamilyExpenseTracker {
     }
 
     updateBasicSummary() {
-        const filteredExpenses = this.applyFiltersToExpenses();
-
-        const total = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const total = this.filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
         const totalEl = document.getElementById('totalAmount');
         if (totalEl) totalEl.textContent = `₹${total.toFixed(2)}`;
 
         const totalCountEl = document.getElementById('totalCount');
-        if (totalCountEl) totalCountEl.textContent = filteredExpenses.length;
+        if (totalCountEl) totalCountEl.textContent = this.filteredExpenses.length;
     }
 
     updateMonthlyAnalytics() {
@@ -1123,9 +1200,18 @@ class FamilyExpenseTracker {
 
         tbody.innerHTML = '';
 
-        let filteredExpenses = this.applyFiltersToExpenses();
+        // Get paginated expenses
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        const paginatedExpenses = this.filteredExpenses.slice(startIndex, endIndex);
 
-        filteredExpenses.forEach(expense => {
+        if (paginatedExpenses.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="no-data">No expenses found</td></tr>';
+            this.updatePaginationControls();
+            return;
+        }
+
+        paginatedExpenses.forEach(expense => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${this.formatDate(expense.date)}</td>
@@ -1152,9 +1238,7 @@ class FamilyExpenseTracker {
             tbody.appendChild(row);
         });
 
-        if (filteredExpenses.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="no-data">No expenses found</td></tr>';
-        }
+        this.updatePaginationControls();
     }
 
     applyFiltersToExpenses() {
@@ -1180,6 +1264,9 @@ class FamilyExpenseTracker {
     }
 
     applyFilters() {
+        // Reset to first page when applying filters
+        this.currentPage = 1;
+        this.filteredExpenses = this.applyFiltersToExpenses();
         this.renderExpensesList();
         this.updateBasicSummary();
     }
@@ -1195,9 +1282,7 @@ class FamilyExpenseTracker {
     }
 
     exportToCSV() {
-        const filteredExpenses = this.applyFiltersToExpenses();
-
-        if (filteredExpenses.length === 0) {
+        if (this.filteredExpenses.length === 0) {
             this.showMessage('No expenses to export', 'error');
             return;
         }
@@ -1205,7 +1290,7 @@ class FamilyExpenseTracker {
         const headers = ['Date', 'Main Category', 'Sub Category', 'Amount (INR)', 'Payment Mode', 'Description'];
         const csvData = [headers];
 
-        filteredExpenses.forEach(expense => {
+        this.filteredExpenses.forEach(expense => {
             csvData.push([
                 expense.date,
                 expense.mainCategory,

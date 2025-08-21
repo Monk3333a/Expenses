@@ -1,5 +1,5 @@
-// Service Worker - PWA and Error Fixed
-const CACHE_NAME = 'family-expense-tracker-v3';
+// Service Worker - Updated Layout Version
+const CACHE_NAME = 'family-expense-tracker-v4';
 const urlsToCache = [
   './',
   './index.html', 
@@ -10,7 +10,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing...');
+  console.log('[SW] Installing updated layout version');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
@@ -19,7 +19,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
+  console.log('[SW] Activating updated layout version');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(

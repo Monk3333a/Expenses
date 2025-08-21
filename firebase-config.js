@@ -17,4 +17,4 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-console.log('Firebase initialized - error handling improved');
+console.log('Firebase initialized - Layout updated with pagination');

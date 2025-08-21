@@ -1,4 +1,4 @@
-/* Family Expense Tracker - Complete CSS */
+/* Family Expense Tracker - Complete CSS with Pagination */
 * {
     margin: 0;
     padding: 0;
@@ -238,6 +238,48 @@ body {
 .filters input:focus {
     outline: none;
     border-color: #2196f3;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+    border-radius: 12px;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.pagination-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination-buttons .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.pagination-buttons .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pagination-buttons .btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 /* Table */
@@ -830,6 +872,13 @@ body {
         align-items: flex-start;
     }
 
+    .pagination-controls {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
     .modal-content {
         margin: 20px;
         width: calc(100% - 40px);
@@ -864,6 +913,16 @@ body {
     .action-buttons .btn {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
+    }
+
+    .pagination-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .pagination-buttons .btn {
+        width: 100%;
     }
 }
 

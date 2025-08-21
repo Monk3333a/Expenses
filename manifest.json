@@ -1,7 +1,7 @@
 {
   "name": "Family Expense Tracker",
   "short_name": "Expenses₹",
-  "description": "Custom family expense tracker with personalized categories",
+  "description": "Family expense tracker with analytics-first layout and pagination",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
